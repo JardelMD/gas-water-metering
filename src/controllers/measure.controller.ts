@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { MeasureService } from '../services/measure.service';
 
-
 export class MeasureController {
   private measureService: MeasureService;
 
@@ -13,7 +12,6 @@ export class MeasureController {
     try {
       const { image, customer_code, measure_datetime, measure_type } = req.body;
 
-      // Certifique-se de que `processMeasure` está definido corretamente no MeasureService
       const { measure_value, image_url, measure_uuid } = await this.measureService.processMeasure({
         image,
         customer_code,
@@ -21,7 +19,7 @@ export class MeasureController {
         measure_type
       });
 
-      return res.status(200).json({ measure_uuid, measure_value, image_url });
+      return res.status(200).json({image_url, measure_value, measure_uuid});
     } catch (error: unknown) {
       if (error instanceof Error) {
         return res.status(500).json({

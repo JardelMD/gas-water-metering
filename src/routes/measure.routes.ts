@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { MeasureController } from '../controllers/measure.controller';
-import { ValidateRequest } from '../middleware/validateRequest';
+import { ValidateRequest } from '../middleware/validateRequest.middleware';
 
 
 export class MeasureRoutes {
