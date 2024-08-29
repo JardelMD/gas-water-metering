@@ -127,8 +127,7 @@ Padrão de resposta (STATUS: 409)
 ```json
 {
     "error_code": "DOUBLE_REPORT",
-    "error_description": "Leitura do mês já
-realizada"
+    "error_description": "Leitura do mês já realizada"
 }
 ```
 
