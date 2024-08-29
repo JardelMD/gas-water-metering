@@ -102,7 +102,7 @@ Padrão de corpo:
     "image": "base64",
     "customer_code": "string",
     "measure_datetime": "datetime",
-    "measure_type": "WATER" ou "GAS"
+    "measure_type": "WATER"
 }
 ```
 
