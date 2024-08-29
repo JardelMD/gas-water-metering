@@ -8,7 +8,7 @@ export class MeasureController {
     this.measureService = new MeasureService();
   }
 
-  public uploadMeasure = async (req: Request, res: Response): Promise<Response> => {
+  public uploadMeasure = async (req: Request, res: Response) => {
     try {
       const { image, customer_code, measure_datetime, measure_type } = req.body;
 
@@ -20,76 +20,58 @@ export class MeasureController {
       });
 
       return res.status(200).json({image_url, measure_value, measure_uuid});
+
     } catch (error: unknown) {
       if (error instanceof Error) {
-        return res.status(500).json({
-          error_code: "SERVER_ERROR",
-          error_description: error.message
-        });
-      } else {
-        return res.status(500).json({
-          error_code: "SERVER_ERROR",
-          error_description: "Erro desconhecido."
-        });
-      }
+        if (error.message === 'INVALID_DATA') {
+          res.status(400).json({ error_code: 'INVALID_DATA', error_description: 'Dados fornecidos são inválidos' });
+        } else if (error.message === 'DOUBLE_REPORT') {
+          res.status(409).json({ error_code: 'DOUBLE_REPORT', error_description: 'Leitura do mês já realizada' });
+        } else {
+          res.status(500).json({ error_code: 'INTERNAL_ERROR', error_description: error.message });
+        }}
     }
   };
 
-  public confirmMeasure = async (req: Request, res: Response): Promise<Response> => {
+  public confirmMeasure = async (req: Request, res: Response) => {
     try {
       const { measure_uuid, confirmed_value } = req.body;
 
-      const result = await this.measureService.confirmMeasure(measure_uuid, confirmed_value);
-
-      if (!result) {
-        return res.status(404).json({
-          error_code: "MEASURE_NOT_FOUND",
-          error_description: "Leitura não encontrada"
-        });
-      }
+      await this.measureService.confirmMeasure(measure_uuid, confirmed_value);
 
       return res.status(200).json({ success: true });
     } catch (error: unknown) {
       if (error instanceof Error) {
-        return res.status(500).json({
-          error_code: "SERVER_ERROR",
-          error_description: error.message
-        });
-      } else {
-        return res.status(500).json({
-          error_code: "SERVER_ERROR",
-          error_description: "Erro desconhecido."
-        });
+        if (error.message === 'INVALID_DATA') {
+          res.status(400).json({ error_code: 'INVALID_DATA', error_description: 'Dados fornecidos são inválidos' });
+        } else if (error.message === 'MEASURE_NOT_FOUND') {
+          res.status(404).json({ error_code: 'MEASURE_NOT_FOUND', error_description: 'Leitura não encontrada' });
+        } else if (error.message === 'CONFIRMATION_DUPLICATE') {
+          res.status(409).json({ error_code: 'CONFIRMATION_DUPLICATE', error_description: 'Leitura já confirmada' });
+        } else {
+          res.status(500).json({ error_code: 'INTERNAL_ERROR', error_description: error.message });
+        }
       }
     }
-  };
-
-  public listMeasures = async (req: Request, res: Response): Promise<Response> => {
+ };
+  public listMeasures = async (req: Request, res: Response) => {
     try {
       const { customer_code } = req.params;
       const { measure_type } = req.query;
 
       const measures = await this.measureService.listMeasures(customer_code, measure_type as string | undefined);
 
-      if (measures.length === 0) {
-        return res.status(404).json({
-          error_code: "MEASURES_NOT_FOUND",
-          error_description: "Nenhuma leitura encontrada"
-        });
-      }
-
       return res.status(200).json({ customer_code, measures });
+
     } catch (error: unknown) {
       if (error instanceof Error) {
-        return res.status(500).json({
-          error_code: "SERVER_ERROR",
-          error_description: error.message
-        });
-      } else {
-        return res.status(500).json({
-          error_code: "SERVER_ERROR",
-          error_description: "Erro desconhecido."
-        });
+        if (error.message === 'INVALID_TYPE') {
+        res.status(400).json({ error_code: 'INVALID_TYPE', error_description: 'Tipo de medição não permitido' });
+        } else if (error.message === 'MEASURES_NOT_FOUND') {
+        res.status(404).json({ error_code: 'MEASURES_NOT_FOUND', error_description: 'Nenhuma leitura encontrada' });
+        } else {
+        res.status(500).json({ error_code: 'INTERNAL_ERROR', error_description: 'Erro interno do servidor' });
+       }
       }
     }
   };

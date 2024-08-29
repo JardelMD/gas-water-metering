@@ -19,7 +19,7 @@ class App {
   }
 
   private routes(): void {
-    this.app.use('/measure', MeasureRoutes);
+    this.app.use('/api', MeasureRoutes);
   }
 }
 

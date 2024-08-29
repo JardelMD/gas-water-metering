@@ -23,9 +23,9 @@ class MeasureService {
             }
         });
         return {
-            measure_uuid: measure.id,
+            image_url: measure.image_url,
             measure_value: measure.measure_value,
-            image_url: measure.image_url
+            measure_uuid: measure.id
         };
     }
     async confirmMeasure(measure_uuid, confirmed_value) {
